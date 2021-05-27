@@ -1,0 +1,13 @@
+.exitPreviewButton {
+  display: block;
+  background: var(--heading);
+  color: var(--background);
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  width: 100%;
+  max-width: 700px;
+  padding: 1rem 0;
+  border-radius: 0.25rem;
+  margin: 5.5rem auto 0;
+}

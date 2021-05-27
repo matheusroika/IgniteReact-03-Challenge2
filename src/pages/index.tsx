@@ -11,6 +11,7 @@ import formatPosts from '../utils/formatPosts';
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
 import { FiCalendar, FiUser } from 'react-icons/fi';
+import ExitPreviewButton from '../components/ExitPreviewButton';
 
 export interface Post {
   uid?: string;
@@ -29,9 +30,10 @@ interface PostPagination {
 
 interface HomeProps {
   postsPagination: PostPagination;
+  preview: boolean;
 }
 
-export default function Home({ postsPagination }: HomeProps) {
+export default function Home({ postsPagination, preview }: HomeProps) {
   const [posts, setPosts] = useState<Post[]>(
     formatPosts(postsPagination.results),
   );
@@ -60,7 +62,7 @@ export default function Home({ postsPagination }: HomeProps) {
       <header className={`${commonStyles.container} ${styles.header}`}>
         <img src="/images/logo.svg" alt="logo" />
       </header>
-      <main className={`${commonStyles.container}`}>
+      <main className={`${styles.container} ${commonStyles.container}`}>
         {posts.map(post => (
           <div key={post.uid} className={styles.post}>
             <Link href={`/post/${post.uid}`}>
@@ -89,17 +91,26 @@ export default function Home({ postsPagination }: HomeProps) {
             Carregar mais posts
           </button>
         )}
+
+        {preview && (
+          <ExitPreviewButton />
+        )}
       </main>
     </>
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps: GetStaticProps = async ({
+  preview = false,
+  previewData,
+}) => {
   const prismic = getPrismicClient();
   const postsResponse = await prismic.query(
     Prismic.Predicates.at('document.type', 'posts'),
     {
       pageSize: 1,
+      orderings: '[document.first_publication_date desc]',
+      ref: previewData?.ref ?? null,
     },
   );
 
@@ -111,6 +122,7 @@ export const getStaticProps: GetStaticProps = async () => {
   return {
     props: {
       postsPagination,
+      preview
     },
     revalidate: 1 * 60 * 60, // 1 hour
   };
