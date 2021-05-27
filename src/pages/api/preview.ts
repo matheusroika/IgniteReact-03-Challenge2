@@ -23,7 +23,7 @@ export default async (req, res) => {
   res.write(
     `<!DOCTYPE html><html><head><meta http-equiv="Refresh" content="0; url=${redirectUrl}" />
     <script>window.location.href = '${redirectUrl}'</script>
-    </head>`
+    </head>`,
   );
   res.end();
 };

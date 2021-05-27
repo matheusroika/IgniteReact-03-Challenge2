@@ -92,9 +92,7 @@ export default function Home({ postsPagination, preview }: HomeProps) {
           </button>
         )}
 
-        {preview && (
-          <ExitPreviewButton />
-        )}
+        {preview && <ExitPreviewButton />}
       </main>
     </>
   );
@@ -122,7 +120,7 @@ export const getStaticProps: GetStaticProps = async ({
   return {
     props: {
       postsPagination,
-      preview
+      preview,
     },
     revalidate: 1 * 60 * 60, // 1 hour
   };

@@ -50,9 +50,9 @@ interface PostProps {
   preview: boolean;
 }
 
-export default function Post({ post, preview}: PostProps) {
+export default function Post({ post, preview }: PostProps) {
   const router = useRouter();
-  useUtterances('utteranceComments', post)
+  useUtterances('utteranceComments', post);
 
   return (
     <>
@@ -85,9 +85,7 @@ export default function Post({ post, preview}: PostProps) {
                 <FiClock />
                 <span>{post.time_to_read}</span>
               </div>
-              {post.editTime && (
-                <i>Editado em {post.editTime}</i>
-              )}
+              {post.editTime && <i>Editado em {post.editTime}</i>}
             </div>
             {post.data.content.map(content => (
               <section key={content.heading}>
@@ -111,7 +109,7 @@ export default function Post({ post, preview}: PostProps) {
                 </a>
               </Link>
             )}
-            
+
             {post.postAfter.title && (
               <Link href={`/post/${post.postAfter.slug}`}>
                 <a className={styles.postAfter}>
@@ -121,11 +119,9 @@ export default function Post({ post, preview}: PostProps) {
               </Link>
             )}
           </div>
-          <div id='utteranceComments'></div>
+          <div id="utteranceComments"></div>
 
-          {preview && (
-            <ExitPreviewButton />
-          )}
+          {preview && <ExitPreviewButton />}
         </main>
       )}
     </>
@@ -162,18 +158,24 @@ export const getStaticProps: GetStaticProps = async ({
 
   const prismic = getPrismicClient();
   const response = await prismic.getByUID('posts', String(slug), {
-    ref: previewData?.ref ?? null
+    ref: previewData?.ref ?? null,
   });
 
   const postBefore = await prismic.queryFirst(
-    Prismic.Predicates.dateBefore('document.first_publication_date', new Date(response.first_publication_date)),
-    { fetch:'posts.title' }
-  )
+    Prismic.Predicates.dateBefore(
+      'document.first_publication_date',
+      new Date(response.first_publication_date),
+    ),
+    { fetch: 'posts.title' },
+  );
   const postAfter = await prismic.queryFirst(
-    Prismic.Predicates.dateAfter('document.first_publication_date', new Date(response.first_publication_date)),
-    { orderings: '[document.first_publication_date]', fetch:'posts.title' }
-  )
-  
+    Prismic.Predicates.dateAfter(
+      'document.first_publication_date',
+      new Date(response.first_publication_date),
+    ),
+    { orderings: '[document.first_publication_date]', fetch: 'posts.title' },
+  );
+
   const time_to_read = response.data.content.reduce((acc, cur) => {
     const wordsReadPerMinute = 200;
     const wordArray = RichText.asText(cur.body).split(' ');
@@ -182,9 +184,10 @@ export const getStaticProps: GetStaticProps = async ({
     return acc + readTimeInMinutes;
   }, 0);
 
-  const editTime = response.first_publication_date !== response.last_publication_date
-    ? formatDateTime(new Date(response.last_publication_date))
-    : null
+  const editTime =
+    response.first_publication_date !== response.last_publication_date
+      ? formatDateTime(new Date(response.last_publication_date))
+      : null;
 
   response.first_publication_date = formatDate(
     new Date(response.first_publication_date),
@@ -196,13 +199,13 @@ export const getStaticProps: GetStaticProps = async ({
     time_to_read: Math.ceil(time_to_read) + ' min',
     postBefore: {
       title: postBefore?.data.title ?? null,
-      slug: postBefore?.uid ?? null
+      slug: postBefore?.uid ?? null,
     },
     postAfter: {
       title: postAfter?.data.title ?? null,
-      slug: postAfter?.uid ?? null
+      slug: postAfter?.uid ?? null,
     },
-  }
+  };
 
   return {
     props: {
